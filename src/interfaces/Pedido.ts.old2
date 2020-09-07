@@ -1,0 +1,8 @@
+import { PedidoItemView } from './PedidoItemView';
+import { PedidoItemBD } from 'src/interfaces/PedidoItemBD';
+import { PedidoItem } from './PedidoItem';
+import { PedidoBase } from './PedidoBase';
+
+export interface Pedido extends PedidoBase {
+    itens: PedidoItemBD[] | PedidoItemView[];
+}

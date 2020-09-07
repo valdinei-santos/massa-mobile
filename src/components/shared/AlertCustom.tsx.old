@@ -1,0 +1,50 @@
+import React from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, ToastAndroid, 
+         Platform } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+
+interface Props {
+    msg: string;
+}
+
+//export default props => {
+const AlertCustom: React.FC<Props> = (props) => {
+    
+    const retorno = (msg: string) => {
+        if (Platform.OS === 'ios') {
+            return (
+                Alert.alert(msg)
+            )
+        } else {
+            return (
+                ToastAndroid.showWithGravity(
+                    msg,
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER
+                )
+            )
+        } 
+    }
+
+    return (
+        <>
+            {retorno(props.msg)}
+        </>
+    );
+
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderColor: '#AAA',
+        alignItems: 'flex-start',
+        backgroundColor: 'white'
+    },
+
+})
+
+export default AlertCustom;

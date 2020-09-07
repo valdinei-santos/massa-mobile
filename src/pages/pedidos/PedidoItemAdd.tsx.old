@@ -1,0 +1,159 @@
+import React, { Component } from 'react';
+import { StyleSheet, Text, View, TextInput, Modal, 
+    TouchableWithoutFeedback, TouchableOpacity, Alert, Picker } from 'react-native';
+import moment from 'moment';
+import 'moment/locale/pt-br';
+import commonStyles from '../../commonStyles';
+
+// const initialState = { id: null, dt_pedido: new Date(), cliente: '', status: 1, };
+
+export default class PedidoItemAdd extends Component {
+    // state = { ...initialState };
+
+    constructor(props){
+        super(props)
+        this.state = this.getInitialState();
+        // this.state = {
+        //     selectedLabel: 1, 
+        //     selectedItem: 1,
+        //     itensProduto: props.itensProduto
+        // }
+        console.log('entrou ProdutoAdd');
+    }
+
+    getInitialState = () => {
+        return {
+            itemProduto: {
+                id: null,
+                qtd: null,
+                precoUnitario: null,
+                preco: null
+            },
+            itensProduto: [
+                {id: 1, tipo: 'Calzone', sabor: 'Calabreza', peso: '190g', qtd_embalagem: 10, qtd: 1, precoUnitario: 10.20, preco: 10.20},
+                {id: 2, tipo: 'Calzone', sabor: 'Frango', peso: '190g', qtd_embalagem: 10, qtd: 1, precoUnitario: 12.20, preco: 12.20},
+                {id: 3, tipo: 'Saltanha', sabor: 'Calabreza', peso: '190g', qtd_embalagem: 10, qtd: 1, precoUnitario: 13.20, preco: 13.20},
+                {id: 4, tipo: 'Doguinho', sabor: 'Calabreza', peso: '190g', qtd_embalagem: 10, qtd: 1, precoUnitario: 14.20, preco: 14.20},
+            ],
+            selectedLabel: 1, 
+            selectedItem: 1,
+            itemPicker: {
+                id: null,
+                value: null,
+            } 
+        }
+    }
+
+    save = () => {
+        if (!this.state.id) {
+            Alert.alert('Dados inválidos!!!', 'Informe o Produto');
+            return;
+        }
+        const data = { ...this.state };
+        this.props.onSave(data);
+        this.setState({ ...initialState });
+    }
+
+    pickerChange(index){
+        this.state.itensProduto.map( (v,i)=>{
+         if( index === i ){
+            this.setState({
+                selectedLabel: this.state.itensProduto[index].selectedLabel,
+                selectedItem: this.state.itensProduto[index].selectedItem
+            })
+         }
+        })
+       }
+
+    render() {
+        return (
+            <Modal onRequestClose={this.props.onCancel} 
+                visible={this.props.isVisible} 
+                animationType='slide' transparent={true} 
+                onShow={() => this.setState({ ...this.getInitialState() })}>
+                <TouchableWithoutFeedback onPress={this.props.onCancel}>
+                    <View style={styles.offset}>
+
+                    </View>
+                </TouchableWithoutFeedback>
+                
+                <View style={styles.container}>
+                    <Text style={styles.header}>Adicionando Produto</Text>
+                    <Picker
+                        style={{height: 50, width: '100%'}}
+                        selectedValue={this.state.selectedItem}
+                        //onValueChange={(itemValue, itemIndex) =>
+                        //    this.setState({itemPicker: itemValue})
+                        onValueChange={(itemValue, itemIndex) => {
+                            console.log(itemIndex);
+                            this.pickerChange(itemIndex) }
+                        }>
+                        {
+                            this.state.itensProduto.map( (v) => {
+                                 return <Picker.Item key={v.id} label={v.tipo + ' ' + v.sabor} value={v.id} />
+                            })
+                        }
+                        {/* <Picker.Item label="Java" value="java" />
+                        <Picker.Item label="JavaScript" value="js" /> */}
+                    </Picker>
+                    <TextInput keyboardType='numeric' placeholder='Qtd:' style={styles.input}
+                        onChangeText={qtd => this.setState({ qtd })}
+                        value={this.state.qtd} />
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                        <TouchableOpacity onPress={this.props.onCancel}>
+                            <Text style={styles.button}>Cancelar</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this.save}>
+                            <Text style={styles.button}>Salvar</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                </View>
+                <TouchableWithoutFeedback onPress={this.props.onCancel}>
+                    <View style={styles.offset}></View>
+                </TouchableWithoutFeedback>
+            </Modal>
+        )
+    }
+}
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: 'blue',
+        justifyContent: "center",
+    },
+    offset: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.7)',
+    },
+    button: {
+      margin: 20,
+      marginRight: 30,
+      color: commonStyles.colors.default,
+    },
+    header: {
+        backgroundColor: commonStyles.colors.default,
+        //backgroundColor: 'black',
+        color: 'white',
+        textAlign: 'center',
+        padding: 15,
+        fontSize: 15
+    },
+    input: { // EXEMPLO PARA USO EM OUTROS LUGARES
+        width: '90%',
+        height: 40,
+        marginTop: 10,
+        marginLeft: 10,
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: '#e3e3e3',
+        borderRadius: 6,
+    },
+    date: {
+        // fontFamily: commonStyles.fontFamily,
+        fontSize: 20,
+        marginLeft: 10,
+        marginTop: 10,
+        textAlign: 'center',
+    }
+  });

@@ -1,0 +1,6 @@
+import { Pedido } from './Pedido';
+
+export interface PedidoView extends Pedido {
+    nomeCliente: string;
+    nomeVendedor: string;
+}

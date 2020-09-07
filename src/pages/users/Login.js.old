@@ -1,0 +1,227 @@
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Image, TextInput, Alert, TouchableOpacity,
+         KeyboardAvoidingView, Platform, ActivityIndicator, StatusBar } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+//import AsyncStorage from '@react-native-community/async-storage';
+import Spinner from 'react-native-loading-spinner-overlay';
+import moment from 'moment';
+import 'moment/locale/pt-br';
+import commonStyles from '../../commonStyles';
+import logoImg from '../../assets/logo-mao-na-massa.jpeg';
+
+import api from '../../services/api';
+import { saveUsuario } from '../../services/storage-user';
+import * as storage from '../../services/storage';
+
+let pkg = require('../../../package.json');
+//import { AsyncStorage, DateTimePicker } from '@react-native-community';
+
+// const initialState = { id: null, dt_pedido: new Date(), cliente: '', status: 1, };
+
+export default function Login() {
+    const navigation = useNavigation();
+    const route = useRoute();
+    const [showButton, setShowButton] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [spinner, setSpinner] = useState(false);
+    
+    useEffect(() => {
+        console.log('useEffect login');
+        
+    }, []);
+
+    useEffect(() => {
+        onShowButton();
+    }, [email, password ]);
+
+    /* useEffect(() => {
+        setInterval(() => {
+            console.log('espera....')
+        }, 3000);
+    }, [spinner]); */
+
+    /* function montaProduto(produto) {
+        console.log('montaProduto');
+        setIdProduto(produto.id);
+        setNome(produto.nome);
+        setSabor(produto.sabor);
+        setPeso(produto.peso);
+        setPrecoUnidade(String(produto.preco_unidade.toFixed(2)).replace('.',','));
+        setQtdEmbalagem(String(produto.qtd_embalagem));
+        setStatus(produto.status);
+    } */
+
+    /* async function saveUsuario(user) {
+        try {
+            await AsyncStorage.setItem('@MaoNaMassa:userToken', JSON.stringify(user))
+        } catch (e) {
+            Alert.alert('Aviso',
+                'Erro ao registrar Token do Usuário',
+                [ { text: 'OK' } ],
+                { cancelable: false },
+            );
+        }
+    } */
+
+    function onShowButton() {
+        if ( (email !== '') && (password !== '') ) {
+            setShowButton(true);
+        } else {
+            setShowButton(false);
+        }
+    }
+
+    async function loginUsuario() {
+        if (!email && !password) {
+            Alert.alert('Preencha todos os campos!!!', '');
+            return;
+        }
+        const umUsuario = { 
+            email: email,
+            password: password,
+        };
+        try {
+            setSpinner(true);
+            const response = await api.post('login', umUsuario);
+            if (response.status === 200) {
+                saveUsuario(response.data);
+                const user = response.data;
+                let produtos;
+                let clientes;
+                let pedidos;
+                let lotes;
+                produtos = await api.get('produtos');
+                storage.saveProdutos(produtos.data);
+                if (user.admin == 1) {
+                    clientes = await api.get('clientes');
+                } else {
+                    clientes = await api.get('clientes', { params: { user_id: user.id } });
+                }
+                storage.saveClientes(clientes.data);
+                if (user.admin == 1) {
+                    pedidos = await api.get('pedidos');
+                } else {
+                    pedidos = await api.get('pedidos', { params: { user_id: user.id } });
+                }
+                storage.savePedidos(pedidos.data);
+                if (user.admin === 1) {
+                    lotes = await api.get('lotes');
+                    storage.saveLotes(lotes.data);
+                }
+                setSpinner(false);
+                navigation.navigate('Main', { umUsuario: user });
+            } else {
+                throw 'Erro ' + response.status + ' no acesso API';
+            }
+        } catch(err) {
+            setSpinner(false);
+            Alert.alert('Ops! Ocorreu um Problema!', 
+                        `Erro no Login: ${err}`);
+            return;
+        }
+    }
+
+
+    return (
+        <KeyboardAvoidingView behavior={(Platform.OS === 'ios' && { behavior: 'padding' }) } 
+            style={styles.container}>
+            <StatusBar barStyle="light-content" backgroundColor={commonStyles.colors.maonamassa2} />    
+            <Spinner 
+                visible={spinner}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle} />
+            <Image source={logoImg} />
+            <View style={styles.formContainer}>                
+                <TextInput placeholder='Email' style={styles.nomeInput} 
+                    //selectionColor='#428AF8'
+                    placeholderTextColor='#428AF8'
+                    underlineColorAndroid='#022695'
+                    autoCompleteType='email'
+                    keyboardType='email-address'
+                    autoFocus={true}
+                    // blurOnSubmit={false} // Para nao fechar o teclado
+                    onChangeText={email => setEmail(email.toLocaleLowerCase())}
+                    value={email} />
+                <TextInput placeholder='Senha' style={styles.nomeInput} 
+                    placeholderTextColor='#428AF8'
+                    underlineColorAndroid='#022695'
+                    autoCompleteType='password'
+                    secureTextEntry={true}
+                    onChangeText={password => setPassword(password)}
+                    value={password} />
+                <View style={styles.viewButton}>
+                    <TouchableOpacity style={{ padding: 10 }} 
+                        disabled={!showButton} 
+                        onPress={() => loginUsuario()}>
+                        <View style={[styles.button, !showButton ? { backgroundColor: '#AAA' } : {}]}>
+                        <Text style={styles.buttonText}>Login</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View> 
+                <View style={styles.viewVersion}>
+                    <Text style={ {fontSize: 15} }>{pkg.version}</Text>
+                </View>
+            </View>
+        </KeyboardAvoidingView>
+    )
+
+}
+
+const styles = StyleSheet.create({
+    spinnerTextStyle: {
+        color: '#FFF'
+    },
+    container: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "flex-end",
+        //backgroundColor: "#F5FCFF",
+        backgroundColor: "#FFF",
+    },
+    formContainer: {
+        //backgroundColor: "#b3f2f2",
+        padding: 20,
+        width: '90%'
+    },
+    nomeInput: { // EXEMPLO PARA USO EM OUTROS LUGARES
+        width: '100%',
+        height: 60,
+        marginTop: 15,
+        marginBottom: 15,
+        //marginLeft: 10,
+        fontSize: 25,
+        backgroundColor: 'white',
+        color: '#022695',
+        //borderWidth: 1,
+        //borderColor: '#e3e3e3',
+        borderColor: '#000',
+        borderRadius: 6,
+        //borderBottomWidth: StyleSheet.hairlineWidth,
+    },
+    viewButton: {
+        width: '100%',
+        height: 55,
+        marginBottom: 20,
+    },
+    button: {
+        backgroundColor: '#00F',
+        marginTop: 10,
+        padding: 10,
+        alignItems: 'center',
+        borderRadius: 20,
+    },
+    buttonText: {
+        fontFamily: commonStyles.fontFamily,
+        color: '#FFF',
+        fontSize: 23
+    },
+    viewVersion: {
+        marginTop: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        //backgroundColor: 'green'
+    }
+    
+
+  });

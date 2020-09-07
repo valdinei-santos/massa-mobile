@@ -1,0 +1,21 @@
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+
+import commonStyles from '../commonStyles';
+import Login from '../pages/login/login';
+
+const AuthStack = createStackNavigator();
+
+const AuthRoutes: React.FC = () => (
+    <AuthStack.Navigator initialRouteName="Login" screenOptions={{ 
+        headerStyle: { backgroundColor: commonStyles.colors.maonamassa2 },
+        headerTintColor: commonStyles.colors.maonamassa3,
+        headerTitleAlign: 'center',
+        headerTitleStyle: { fontSize: 30 },
+        // headerShown: false,
+        }}> 
+            <AuthStack.Screen name="Login" component={Login} />    
+    </AuthStack.Navigator>
+);
+
+export default AuthRoutes;

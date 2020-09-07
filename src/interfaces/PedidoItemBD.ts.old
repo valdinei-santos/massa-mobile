@@ -1,0 +1,6 @@
+export interface PedidoItemBD {
+    produto_id: number,
+    preco_unidade: number;
+    qtd_embalagem: number;
+    qtd: number;
+}

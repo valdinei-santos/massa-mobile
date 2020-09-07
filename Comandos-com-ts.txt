@@ -1,0 +1,89 @@
+# Configuração inicial
+1 - Instalar Android Studio. (Com java já instalado)
+
+2 - Configurar o Android Studio no PATH
+# Incluir dentro de /Users/valdinei/.bash_profile
+export ANDROID_HOME=/Users/valdinei/Library/Android/sdk/
+export PATH="$PATH:$ANDROID_HOME/emulator"
+export PATH="$PATH:$ANDROID_HOME/tools"
+export PATH="$PATH:$ANDROID_HOME/tools/bin"
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+
+# Emular no dispositivo fisico.
+1 - Ativar depuração USB no aparelho
+2 - Conectar smartphone via USB
+3 - Executar o comando abaixo para ver se o aparelho esta aparecendo
+  adb devices
+4 - Executar o comando para rodar o app
+react-native run-android
+
+# Emulador
+1 - Ver os emuladores instalados
+emulator -list-avds
+
+2 - Para dar start no emulador desejado
+emulator -no-snapshot -avd Pixel_2_API_28
+
+
+# React-Native
+
+1 - Criar a app com typescript
+npx react-native init mobile --template react-native-template-typescript
+
+2 - 
+npm install @react-navigation/native
+npm install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view
+import 'react-native-gesture-handler';  --> Incluir no inicio do App.tsx
+npm install @react-navigation/stack
+npm install --save-dev typescript @types/jest @types/react @types/react-native @types/react-test-renderer
+
+npm install moment
+npm install react-native-vector-icons
+npm install --save-dev @types/react-native-vector-icons
+   INCLUIR no android/app/build.gradle: apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+npm install @react-native-community/async-storage
+react-native unlink @react-native-community/async-storage
+npm install axios
+npm install react-native-loading-spinner-overlay
+npm install --save-dev @types/react-native-loading-spinner-overlay
+npm install react-native-divider
+npm install @react-native-community/picker
+npm install react-native-animatable --save    --> https://github.com/oblador/react-native-animatable 
+npm install jwt-decode --save
+npm install --save-dev @types/jwt-decode
+npm install --save realm 
+npm uninstall --save realm
+
+npm install react-native-html-to-pdf --save   --> Gerar PDF https://aboutreact.com/make-pdf-in-react-native-from-html-text/
+npm install @types/react-native-html-to-pdf --save-dev
+
+npm install react-native-file-viewer --save   --> Ver o PDF https://aboutreact.com/react-native-file-viewer/#View-File-in-Native-File-Viewer-in-React-Native
+
+
+
+## Como usar o Realm Studio com Emulador Android
+
+-- Para abrir direto na linha de comando
+open -a "Realm Studio" <Path do arquivo default.realm>
+
+-- Como copiar o default.realm do emulador para uma pasta no computador
+adb pull /data/data/com.mobile/files/default.realm .  --> Dá permissao negada
+
+-- Essa forma da certo
+adb shell "run-as com.mobile cat /data/data/com.mobile/files/default.realm" > default.realm
+
+-- Essa forma é para devices via USB
+adb -d shell "run-as com.mobile cat /data/data/com.mobile/files/default.realm" > default.realm
+
+
+
+### Instalando ESLint
+- Instalar o ESLint para Dev
+npm install -D eslint
+
+- Criar o arquivo de config no projeto
+./node_modules/.bin/eslint --init
+
+
+
+

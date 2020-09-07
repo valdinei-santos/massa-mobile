@@ -1,0 +1,295 @@
+# Configuração inicial
+1 - Instalar Android Studio. (Com java já instalado)
+
+2 - Configurar o Android Studio no PATH
+# Incluir dentro de /Users/valdinei/.bash_profile
+export ANDROID_HOME=/Users/valdinei/Library/Android/sdk/
+export PATH="$PATH:$ANDROID_HOME/emulator"
+export PATH="$PATH:$ANDROID_HOME/tools"
+export PATH="$PATH:$ANDROID_HOME/tools/bin"
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+
+# Emular no dispositivo fisico.
+1 - Ativar depuração USB no aparelho
+2 - Conectar smartphone via USB
+3 - Executar o comando abaixo para ver se o aparelho esta aparecendo
+  adb devices
+4 - Executar o comando para rodar o app
+react-native run-android
+
+# Emulador
+1 - Ver os emuladores instalados
+emulator -list-avds
+
+2 - Para dar start no emulador desejado
+emulator -no-snapshot -avd Pixel_2_API_28
+
+
+# React-Native
+
+-- COM EXPO - Expo não precisa de Android Studio instalado, mas precisa de um app Expo no celular/emulador
+1 - Instalar o Expo
+npm install -g expo-cli
+ou
+npm install -g create-react-native-app
+
+2 - Criar o projeto
+create-react-native-app appMaoNaMassa
+cd appMaoNaMassa
+npm start
+npm eject --> para transformar um projeto Expo em Nativo
+
+-- COM NATIVO
+npm install -g react-native-cli
+
+1 - Criar o projeto
+react-native init appMaoNaMassa
+
+2 - Iniciar o projeto a primeira vez
+cd appMaoNaMassa
+react-native run-android
+
+3 - Rodar o projeto quando já tem a app instalada no emulador
+react-native start 
+
+4 - Instalar o pacotes abaixo: 
+a) Navegação do react-native
+    https://reactnavigation.org/docs/getting-started
+    https://reactnavigation.org/docs/hello-react-navigation
+npm install @react-navigation/native
+npm install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view
+npm install @react-navigation/stack
+
+b) Eslint e Typescript
+npm install eslint@^5.0.0 typescript
+npm install eslint-plugin-react-hooks --save-dev  --> Eslint para Hooks
+ 
+c) Para trabalhar com datas
+npm i -s moment
+
+d) Para instalar a biblioteca com varios tipos de icones
+npm install react-native-vector-icons 
+--> Ver se ainda é necessário o link. Creio que se mexer no android/app/build.gradle não precisa.
+react-native link react-native-vector-icons
+
+e) Para trabalhar com botão de ação.
+npm i -s react-native-action-button
+react-native link react-native-action-button
+
+f) Para usar o novo Datetimepicker 
+npm install @react-native-community/datetimepicker --save
+
+g) Asyncstorage
+npm install @react-native-community/async-storage
+react-native unlink @react-native-community/async-storage
+
+h) Client para acesso a API
+npm install axios
+
+i) Para ter a internacionalização disponível. Para usar a moeda brasileira nos valores
+npm install intl 
+
+j) Para usar checkbox --> Usei Switch por compatividade com IOS
+// npm install @react-native-community/checkbox --save
+// depois... import CheckBox from '@react-native-community/checkbox';
+
+l) Para instalar o loading/spinner
+https://www.npmjs.com/package/react-native-loading-spinner-overlay
+
+m)
+
+
+--
+
+f) Para permitir Swipeable
+npm i -s react-native-gesture-handler
+
+h) Para usar o router-flux
+#npm install --save eslint-config-rallycoding 
+npm install --save react-native-router-flux
+npm install --save react-native-router-flux@3.38.0 
+#npm install --save react-native-deprecated-custom-components
+
+
+
+j)
+
+npm install --save react-navigation-drawer
+
+5 - Criar a estrutura abaixo:
+- Criar a pasta src
+- Criar a pasta pages dentro de src
+- Criar o arquivo main.js dentro de pages
+- Criar o arquivo index.js e routes.js dentro de src
+- Criar a pasta config dentro de src
+- Criar o arquivo StatusBarConfig.js
+
+-- Para limpar bundler's cache quando alteramos as variáveis de ambiente
+react-native start --reset-cache
+
+
+# Ordem do ciclo de vida dos Componentes
+Constructor
+ComponentWill
+Render
+ComponentDid
+
+componentDidUpdate --> Quando é feita qualquer alteração na tela ele é chamado
+componentWillUnmont --> Chamado quando o componente é destruido.
+
+https://stackoverflow.com/questions/51855131/react-navigation-is-it-possible-to-goback-or-pop-with-params
+
+
+
+// Exemplo de uso do AsyncStorage
+-------------------------------------------------
+    storeData = async (data) => {
+        try {
+            await AsyncStorage.setItem('@pedido', JSON.stringify(data));
+        } catch (e) {
+            // saving error
+        }
+    }
+
+    getData = async () => {
+        try {
+          const value = await AsyncStorage.getItem('@pedido')
+          if(value !== null) {
+            // value previously stored
+          }
+        } catch(e) {
+          // error reading value
+        }
+      }
+-------------------------------------------------
+
+
+// Exemplo de uso do this.props.navigation.addListener
+-------------------------------------------------
+// Se registra no evento de didFocus. Quando a tela tiver foco esse evento é chamado.
+// Inscrever-se para atualizações do ciclo de vida da navegação. Neste caso para o evento didFocus (finalizou o foco na tela)
+this._onFocusListener = this.props.navigation.addListener('didFocus', (payload) => {
+    // Update the component (API calls here)
+    console.log('passou');
+});
+-------------------------------------------------
+
+
+
+import React, { Component } from 'react';
+import { Plataform, StyleSheet, Text, View } from 'react-native';
+
+export default class App extends Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.welcome}>Welcome to React Native!</Text>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF",
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: "center",
+    margin: 10
+  }
+});
+
+
+Gerar o bundle para execução offline
+# cd /Users/valdinei/code/appMaoNaMassa/mobile
+# react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.bundle --assets-dest android/app/src/main/res/
+
+Gerar certificado para assinatura do app
+# keytool -genkey -v -keystore my-release-key.keystore -alias appMaoNaMassa -keyalg RSA -keysize 2048 -validity 10000
+  keytool -genkey -v -keystore app-mao-na-massa.keystore -alias appMaoNaMassa -keyalg RSA -keysize 2048 -validity 10000
+    usei->
+      senha: als0304
+      dados: CN=Valdinei, OU=Valdinei, O=Valdinei, L=Santo Amaro, ST=Santa Catarina, C=BR
+      alias: appMaoNaMassa
+      app-mao-na-massa.keystore
+
+# mv my-release-key.keystore android/app/
+cp -p app-mao-na-massa.keystore /android/app
+
+Gerar o apk assinado
+# Abra o arquivo "gradle.properties" localizado no diretório "<RAIZ_DO_PROJETO>/android/".
+# inclua as linhas abaixo no final do arquivo:
+MYAPP_RELEASE_STORE_FILE=my-release-key.keystore
+MYAPP_RELEASE_KEY_ALIAS=appMaoNaMassa
+MYAPP_RELEASE_STORE_PASSWORD=als0304
+MYAPP_RELEASE_KEY_PASSWORD=als0304
+# Abra o arquivo "build.gradle" localizado no diretório "<RAIZ_DO_PROJETO>/android/app".
+# faça as modificações abaixo:
+...trecho de código...
+android {
+    ...trecho de código...
+    defaultConfig { ...trecho de código... }
+    signingConfigs {
+        release {
+            storeFile file(MYAPP_RELEASE_STORE_FILE)
+            storePassword MYAPP_RELEASE_STORE_PASSWORD
+            keyAlias MYAPP_RELEASE_KEY_ALIAS
+            keyPassword MYAPP_RELEASE_KEY_PASSWORD
+        }
+    }
+    buildTypes {
+        release {
+            ...trecho de código...
+            signingConfig signingConfigs.release
+        }
+    }
+}
+...trecho de código...
+
+Geração do apk
+# cd android
+# ./gradlew assembleRelease
+# cd <RAIZ_DO_PROJETO>/android/app/build/outputs/apk/
+
+
+## Ultima GERAÇÃO DE APK QUE FIZ 
+
+1 - Gerar certificado para assinatura do app
+# cd /Users/valdinei/code/appMaoNaMassa/mobile
+# keytool -genkey -v -keystore app-mao-na-massa.keystore -alias appMaoNaMassa -keyalg RSA -keysize 2048 -validity 10000
+    usei->
+      senha: als0304
+      dados: CN=Valdinei, OU=Valdinei, O=Valdinei, L=Santo Amaro, ST=Santa Catarina, C=BR
+      alias: appMaoNaMassa
+      app-mao-na-massa.keystore
+2 - Copiar a chave gerada para o diretório da APP no android
+# cp -p app-mao-na-massa.keystore android/app
+3 - Ajustar o arquivo android\app\build.gradle conforme dados abaixo: 
+          android {
+          ....
+            signingConfigs {
+              release {
+                storeFile file('app-mao-na-massa.keystore')
+                storePassword 'als0304'
+                keyAlias 'appMaoNaMassa'
+                keyPassword 'als0304'
+              }
+            }
+            buildTypes {
+              release {
+                ....
+                signingConfig signingConfigs.release
+              }
+            }
+          }
+4 - Gerar o APK
+# cd android/
+# ./gradlew assembleRelease
+
+5 - Para gerar um APK que atualize o existente
+Altere o campo versionCode no arquivo android/app/build.gradle
+
