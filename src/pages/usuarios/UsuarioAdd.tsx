@@ -48,14 +48,12 @@ const UsuarioAdd: React.FC<any> = () => {
 
   function montaUsuarioNaTela(usuario: Usuario) {
     console.log('montaUsuarioNaTela');
-    //SetIdUsuario(usuario.id);
     setNomeUsuario(usuario.nome);
     setEmailUsuario(usuario.email);
-    setPasswordUsuario(usuario.password!);
-    //setEhVendedor(usuario.fl_vendedor!);
+    //setPasswordUsuario(usuario.password!);
     setEhAdmin(usuario.fl_admin === 0 ? false : true);
-    setEhAdmin(usuario.fl_vendedor === 0 ? false : true);
-    setEhAdmin(usuario.fl_usuario === 0 ? false : true);
+    setEhVendedor(usuario.fl_vendedor === 0 ? false : true);
+    setEhUsuario(usuario.fl_usuario === 0 ? false : true);
   }
 
   function onShowButton() {
@@ -141,9 +139,11 @@ const UsuarioAdd: React.FC<any> = () => {
         <TextInput placeholder='E-mail' style={styles.nomeInput}
           onChangeText={emailUsuario => setEmailUsuario(emailUsuario)}
           value={emailUsuario} />
-        <TextInput placeholder='Senha' style={styles.nomeInput} secureTextEntry={true}
-          onChangeText={passwordUsuario => setPasswordUsuario(passwordUsuario)}
-          value={passwordUsuario} />
+        { !ehEdit &&
+          <TextInput placeholder='Senha' style={styles.nomeInput} secureTextEntry={true}
+            onChangeText={passwordUsuario => setPasswordUsuario(passwordUsuario)}
+            value={passwordUsuario} />
+        }
         <View style={styles.viewSwitchs}>
           <Text style={styles.textSwitch}>Tipo de Usuário:</Text>
           <View style={styles.viewUmSwitch}>

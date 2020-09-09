@@ -14,6 +14,7 @@ import { Usuario } from 'src/interfaces/Usuario';
 //import AsyncStorage from '@react-native-community/async-storage';
 import api from '../../services/api';
 import { useUsuario } from '../../contexts/usuarioContext';
+import { AxiosResponse, AxiosError } from 'axios';
 
 type ParamList = {
   UsuarioList: {
@@ -110,16 +111,37 @@ const UsuarioList: React.FC = () => {
   }
 
   async function deleteUsuario(id: number) {
-    console.log('UsuarioList - Delete');
-    const response = await api.delete('users/' + id);
+    console.log('UsuarioList - Delete ' + id);
+    setSpinner(true);
+    api.delete<AxiosResponse>('users/' + id)
+      .then((response: AxiosResponse) => {
+        setSpinner(false);
+        if (response.status === 200) {
+          const newUsuarios = usuarios!.filter(usuario => usuario.id !== id);
+          //setUsuarios(newUsuarios);
+          setNewStateUsuarios(newUsuarios);
+          return;
+        } else {
+          throw 'Erro ' + response.status + ' no acesso API';
+        }
+      })
+      .catch((error: AxiosError) => {
+        setSpinner(false);
+        let err = JSON.stringify(error.response?.data);
+        console.log(error.response?.data)
+        //alert.alertErroOps(error.message);
+        //alert.alertErroOps(err);
+        Alert.alert('Erro', 'Falha na exclusão do Usuario! ' + err);
+        return;
+      })
+
+    /* const response = await api.delete('users/' + id);
     if (response.status === 200) {
       const newUsuarios = usuarios!.filter(usuario => usuario.id !== id);
-      //setUsuarios(newUsuarios);
       setNewStateUsuarios(newUsuarios);
-      //storage.saveUsuarios(newUsuarios);
     } else {
       Alert.alert('Erro', 'Falha na exclusão do produto! Status: ' + response.status);
-    }
+    } */
   }
 
   function editUsuario(id: number) {

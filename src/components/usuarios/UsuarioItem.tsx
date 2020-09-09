@@ -73,7 +73,7 @@ const UsuarioItem: React.FC<Props> = (props) => {
           <Text style={styles.descriptionEmail}>
             {props!.email} 
           </Text>
-          <Text style={styles.descriptionEmail}>
+          <Text style={styles.descriptionTipo}>
             { (props!.fl_admin === 1) ? 'Administrador' : 
               (props!.fl_vendedor === 1) ? 'Vendedor' : 
                 (props!.fl_usuario === 1) ? 'Usuario' : ''
@@ -120,6 +120,10 @@ const styles = StyleSheet.create({
   descriptionEmail: {
     //color: commonStyles.colors.tipo2,
     color: 'red',
+    fontSize: 20,
+  },
+  descriptionTipo: {
+    color: 'black',
     fontSize: 20,
   },
   description: {
